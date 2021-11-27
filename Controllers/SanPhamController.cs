@@ -1,11 +1,13 @@
-﻿using MarkShop.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MarkShop.Models;
+using X.PagedList;
+using X.PagedList.Mvc.Core;
 
 namespace MarkShop.Controllers
 {
@@ -24,7 +26,7 @@ namespace MarkShop.Controllers
         {
             ViewBag.loaiSP = db.LoaiSanPhams.OrderBy(sp => sp.MaLoaiSp);
             var dsSanPham = new Product(db);
-            var model = dsSanPham.ListAll(page, pageSize);
+            var model = dsSanPham.ListAll(page, pageSize, db);
             return View(model);
         }
         public IActionResult SanPhamTheoLoai(int maLoaiSP)

@@ -9,15 +9,15 @@ namespace MarkShop.Models
 {
     public class Product
     {
-        //QLSHOPTHOITRANGContext db = new QLSHOPTHOITRANGContext();
         private readonly QLSHOPTHOITRANGContext db;
         public Product(QLSHOPTHOITRANGContext Database)
         {
             db = Database;
         }
+
         public Product()
         { }
-        public IEnumerable<SanPham> ListAll(int page, int pageSize)
+        public IEnumerable<SanPham> ListAll(int page, int pageSize, QLSHOPTHOITRANGContext db)
         {
             return db.SanPhams.OrderByDescending(sp => sp.MaSp).ToPagedList(page, pageSize);
         }

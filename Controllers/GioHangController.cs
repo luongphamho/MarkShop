@@ -5,15 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using X.PagedList;
+using X.PagedList.Mvc.Core;
 
 
 namespace MarkShop.Controllers
 {
     public class GioHangController : Controller
     {
-        //readonly QLSHOPTHOITRANGContext db = new QLSHOPTHOITRANGContext();
-        // GET: GioHang
-        // Tạo đối tượng db chứa dữ liệu từ Model QLBanQuanAo
         private readonly QLSHOPTHOITRANGContext db;
         public GioHangController(QLSHOPTHOITRANGContext Database)
         {
@@ -21,44 +20,32 @@ namespace MarkShop.Controllers
         }
         public List<GioHang> LayGioHang()
         {
-            //List<GioHang> listGioHang = Session["GioHang"] as List<GioHang>;
-            //var cart = SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session, "cart");
-            List<GioHang> listGioHang = SessionHelper.GetObjectFromJson<List<GioHang>>(HttpContext.Session, "GioHang");
+            List<GioHang> listGioHang = SessionHelper.GetObjectFromJson<List<GioHang>>(HttpContext.Session, "GioHang") as List<GioHang>;
             if (listGioHang == null)
             {
-                // Nếu listGioHang chưa tồn tại thì khởi tạo
                 listGioHang = new List<GioHang>();
-                //listGioHang = SessionHelper.GetObjectFromJson<List<GioHang>>(HttpContext.Session, "GioHang");
                 SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", listGioHang);
             }
             return listGioHang;
         }
 
-        // Xây dựng phương thức thêm vào giỏ hàng
-        public ActionResult ThemGioHang(int msp, string strURL)
+        public IActionResult ThemGioHang(int msp, string strURL)
         {
-            // Kiểm tra sản phẩm này trong database đã tồn tại chưa (tránh trường hợp user tự get URL). Nếu k tồn tại => Trang 404
             SanPham product = db.SanPhams.SingleOrDefault(pd => pd.MaSp.Equals(msp));
             if (product == null)
             {
                 Response.StatusCode = 404;
                 return null;
             }
-            // Lấy ra số lượng tồn hiện có hiển thị ra view HetHang
-            //Session["SoLuongTonHienCo"] = product.SoLuongTon;
-            //HttpContext.session.setstring
+
             HttpContext.Session.SetInt32("SoLuongTonHienCo", (int)product.SoLuongTon);
-            // Lấy ra giỏ hàng
             List<GioHang> listGioHang = LayGioHang();
-            // Kiểm tra sản phẩm này có tồn tại trong Session["GioHang"] hay chưa ?
             GioHang item = listGioHang.Find(sp => sp.maSP == msp);
             if (item != null)
-            { // Đã có sản phẩm này trong giỏ 
-                //Session["TenSP"] = item.tenSP;
+            { 
                 HttpContext.Session.SetString("TenSP", item.tenSP);
                 item.soLuong++;
-                // Kiểm tra tiếp xem số lượng tồn sản phẩm trong database có nhỏ hơn số lượng sản phẩm thêm hay k. 
-                // Nếu nhỏ hơn thì báo hết hàng
+                SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", listGioHang);
                 if (product.SoLuongTon < item.soLuong)
                 {
                     item.soLuong = 1;
@@ -66,11 +53,11 @@ namespace MarkShop.Controllers
                 }
                 return Redirect(strURL);
             }
-            item = new GioHang(msp);
+            item = new GioHang(msp, db);
             listGioHang.Add(item);
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", listGioHang);
             return Redirect(strURL);
         }
-        // Xây dựng phương thức tính tổng số lượng
         private int TongSoLuong()
         {
             int tongSoLuong = 0;
@@ -78,13 +65,11 @@ namespace MarkShop.Controllers
             if (listGioHang != null)
             {
                 tongSoLuong = listGioHang.Sum(sp => sp.soLuong);
-                //Session.Add("TongSoLuong", tongSoLuong);
                 HttpContext.Session.SetInt32("TongSoLuong", tongSoLuong);
             }
             return tongSoLuong;
         }
 
-        // Xây dựng phương thức tính tổng thành tiền
         private double TongThanhTien()
         {
             double tongThanhTien = 0;
@@ -96,18 +81,13 @@ namespace MarkShop.Controllers
             return tongThanhTien;
         }
 
-        // Xây dựng trang giỏ hàng
 
         public IActionResult GioHang()
         {
-            //List<GioHang> listGioHang = LayGioHang();
             ViewBag.loaiSP = db.LoaiSanPhams.OrderBy(sp => sp.MaLoaiSp);
             if (SessionHelper.GetObjectFromJson<List<GioHang>>(HttpContext.Session, "GioHang") == null)
             {
-                //SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", 0);
                 return RedirectToAction("GioHangTrong", "GioHang");
-                //return RedirectToAction("Index", "Home");
-                //View(listGioHang);
             }
             List<GioHang> listGioHang = LayGioHang();
             ViewBag.TongSoLuong = TongSoLuong();
@@ -122,20 +102,17 @@ namespace MarkShop.Controllers
             return PartialView();
         }
 
-        public IActionResult CapNhatGioHang(int maSP, FormCollection f)
+        public IActionResult CapNhatGioHang(int maSP, IFormCollection f)
         {
-            // Kiểm tra sản phẩm này trong database đã tồn tại chưa (tránh trường hợp user tự get URL). Nếu k tồn tại => Trang 404
             SanPham product = db.SanPhams.SingleOrDefault(pd => pd.MaSp.Equals(maSP));
             if (product == null)
             {
                 Response.StatusCode = 404;
                 return null;
             }
-            // Lấy ra số lượng tồn hiện có hiển thị ra view HetHang
             HttpContext.Session.SetInt32("SoLuongTonHienCo", (int)product.SoLuongTon);
             List<GioHang> listGH = LayGioHang();
             GioHang sp = listGH.Single(s => s.maSP == maSP);
-            //Session["TenSP"] = sp.tenSP;
             HttpContext.Session.SetString("TenSP", sp.tenSP);
             if (sp != null)
             {
@@ -147,6 +124,7 @@ namespace MarkShop.Controllers
 
                 }
             }
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", listGH);
             return RedirectToAction("SanPhamPartial", "SanPham");
         }
 
@@ -157,6 +135,7 @@ namespace MarkShop.Controllers
             if (sp != null)
             {
                 listGH.RemoveAll(s => s.maSP == maSP);
+                SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", listGH);
                 return RedirectToAction("SanPhamPartial", "SanPham");
             }
             if (listGH.Count == 0)
@@ -170,6 +149,7 @@ namespace MarkShop.Controllers
         {
             List<GioHang> listGH = LayGioHang();
             listGH.Clear();
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", listGH);
             if (listGH.Count == 0)
             {
                 return RedirectToAction("SanPhamPartial", "SanPham");
@@ -194,9 +174,7 @@ namespace MarkShop.Controllers
 
         [HttpGet]
         public IActionResult DatHang()
-        {
-            //Kiểm tra đăng nhập
-            //if (Session["taikhoan"] == null || Session["taikhoan"].ToString() == "")
+        {   
             if (HttpContext.Session.GetString("taikhoan") == null)
             {
                 return RedirectToAction("DangNhap", "User");
@@ -217,7 +195,7 @@ namespace MarkShop.Controllers
             return View(lstGioHang);
         }
         [HttpPost]
-        public IActionResult DatHang(FormCollection f)
+        public IActionResult DatHang(IFormCollection f)
         {
             // Thêm đơn hàng
             HoaDon ddh = new HoaDon();

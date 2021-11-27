@@ -11,9 +11,11 @@ namespace MarkShop.Controllers
 {
     public class AdminController : Controller
     {
-        QLSHOPTHOITRANGContext db = new QLSHOPTHOITRANGContext();
-        //string? SessionAdmin = default;
-        
+        private readonly QLSHOPTHOITRANGContext db;
+        public AdminController(QLSHOPTHOITRANGContext Database)
+        {
+            db = Database;
+        }
         public IActionResult LayoutAdmin()
         {
             return View();
@@ -37,7 +39,7 @@ namespace MarkShop.Controllers
                 return RedirectToAction("DangNhap", "DangNhap");
             }*/
             var trangPhucNu = new Product();
-            var model = trangPhucNu.ListAll(page, pageSize);
+            var model = trangPhucNu.ListAll(page, pageSize, db);
             return View(model);
         }
         public ActionResult DanhMucCacSanPham(int page = 1, int pageSize = 12)
@@ -47,7 +49,7 @@ namespace MarkShop.Controllers
                 return RedirectToAction("DangNhap", "DangNhap");
             }*/
             var sanPham = new Product();
-            var model = sanPham.ListAll(page, pageSize);
+            var model = sanPham.ListAll(page, pageSize, db);
             return View(model);
         }
         public ActionResult DangXuat()

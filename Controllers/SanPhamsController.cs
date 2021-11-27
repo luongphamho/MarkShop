@@ -17,15 +17,11 @@ namespace MarkShop.Controllers
         {
             _context = context;
         }
-
-        // GET: SanPhams
         public async Task<IActionResult> Index()
         {
             var qLSHOPTHOITRANGContext = _context.SanPhams.Include(s => s.MaLoaiSpNavigation).Include(s => s.MaNccNavigation);
             return View(await qLSHOPTHOITRANGContext.ToListAsync());
         }
-
-        // GET: SanPhams/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -44,18 +40,12 @@ namespace MarkShop.Controllers
 
             return View(sanPham);
         }
-
-        // GET: SanPhams/Create
         public IActionResult Create()
         {
             ViewData["MaLoaiSp"] = new SelectList(_context.LoaiSanPhams, "MaLoaiSp", "MaLoaiSp");
             ViewData["MaNcc"] = new SelectList(_context.NhaCungCaps, "MaNcc", "MaNcc");
             return View();
         }
-
-        // POST: SanPhams/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("MaSp,TenSp,MoTa,GioiTinh,GiaBan,GiaNhap,Anh,MaLoaiSp,MaNcc,SoLuongTon")] SanPham sanPham)
@@ -70,8 +60,6 @@ namespace MarkShop.Controllers
             ViewData["MaNcc"] = new SelectList(_context.NhaCungCaps, "MaNcc", "MaNcc", sanPham.MaNcc);
             return View(sanPham);
         }
-
-        // GET: SanPhams/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -88,10 +76,6 @@ namespace MarkShop.Controllers
             ViewData["MaNcc"] = new SelectList(_context.NhaCungCaps, "MaNcc", "MaNcc", sanPham.MaNcc);
             return View(sanPham);
         }
-
-        // POST: SanPhams/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("MaSp,TenSp,MoTa,GioiTinh,GiaBan,GiaNhap,Anh,MaLoaiSp,MaNcc,SoLuongTon")] SanPham sanPham)
@@ -125,8 +109,6 @@ namespace MarkShop.Controllers
             ViewData["MaNcc"] = new SelectList(_context.NhaCungCaps, "MaNcc", "MaNcc", sanPham.MaNcc);
             return View(sanPham);
         }
-
-        // GET: SanPhams/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -145,8 +127,6 @@ namespace MarkShop.Controllers
 
             return View(sanPham);
         }
-
-        // POST: SanPhams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -156,7 +136,6 @@ namespace MarkShop.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
         private bool SanPhamExists(int id)
         {
             return _context.SanPhams.Any(e => e.MaSp == id);

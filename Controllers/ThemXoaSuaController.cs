@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,12 +13,14 @@ namespace MarkShop.Controllers
 {
     public class ThemXoaSuaController : Controller
     {
-        // GET: ThemXoaSua
-        QLSHOPTHOITRANGContext db = new QLSHOPTHOITRANGContext();
-        //string? SessionAdmin = default;
+        private readonly QLSHOPTHOITRANGContext db;
+        public ThemXoaSuaController(QLSHOPTHOITRANGContext Database)
+        {
+            db = Database;
+        }
 
         [HttpGet]
-        public ActionResult ThemSanPham()
+        public IActionResult ThemSanPham()
         {
             ViewBag.MaLoaiSP = new SelectList(db.LoaiSanPhams.OrderBy(n => n.MaLoaiSp), "MaLoaiSP", "TenLoaiSP");
             ViewBag.MaNCC = new SelectList(db.NhaCungCaps.OrderBy(n => n.MaNcc), "MaNCC", "TenNCC");
@@ -25,7 +28,7 @@ namespace MarkShop.Controllers
         }
 
         [HttpPost]
-        public ActionResult ThemSanPham(SanPham sp, IFormFile fUpload)
+        public IActionResult ThemSanPham(SanPham sp, IFormFile fUpload)
         {
             ViewBag.MaLoaiSP = new SelectList(db.LoaiSanPhams.OrderBy(n => n.MaLoaiSp), "MaLoaiSP", "TenLoaiSP");
             ViewBag.MaNCC = new SelectList(db.NhaCungCaps.OrderBy(n => n.MaNcc), "MaNCC", "TenNCC");
@@ -65,7 +68,7 @@ namespace MarkShop.Controllers
             return RedirectToAction("DanhMucCacSanPham", "Admin");
         }
 
-        public ActionResult XoaSanPham(int maSP)
+        public IActionResult XoaSanPham(int maSP)
         {
             if (HttpContext.Session.GetString("SessionAdmin") == null)
             {
@@ -82,7 +85,7 @@ namespace MarkShop.Controllers
             return RedirectToAction("DanhMucCacSanPham", "Admin");
         }
 
-        public ActionResult ChiTietSanPham(int maSP)
+        public IActionResult ChiTietSanPham(int maSP)
         {
             if (HttpContext.Session.GetString("SessionAdmin") == null)
             {
@@ -101,7 +104,7 @@ namespace MarkShop.Controllers
         }
 
         [HttpGet]
-        public ActionResult SuaSanPham(int id)
+        public IActionResult SuaSanPham(int id)
         {
             ViewBag.MaLoaiSP = new SelectList(db.LoaiSanPhams.OrderBy(n => n.MaLoaiSp), "MaLoaiSP", "TenLoaiSP");
             ViewBag.MaNCC = new SelectList(db.NhaCungCaps.OrderBy(n => n.MaNcc), "MaNCC", "TenNCC");
@@ -113,11 +116,8 @@ namespace MarkShop.Controllers
             }
             return View(product);
         }
-        //[ValidateInput(false)] // Cho phép nhập đoạn mã html vào csdl. Nhập đoạn mã html ở thẻ input nào thì khi binding ra giao diện nhớ ghi @Html.Raw(data hiển thị). VD: Xem ở view chi tiết chỗ @Html.Raw(Model.MoTa).
-        // Do mô tả chứa đoạn mã html ( <br />) nên phải sử dụng cú pháp razor mvc @Html.Raw(). Đọc đoạn mã html
-        //[ValidateInput(false)]
         [HttpPost]
-        public ActionResult SuaSanPham(SanPham sp, IFormFile fUpload)
+        public IActionResult SuaSanPham(SanPham sp, IFormFile fUpload)
         {
             SanPham product = db.SanPhams.SingleOrDefault(n => n.MaSp.Equals(sp.MaSp));
             ViewBag.MaLoaiSP = new SelectList(db.LoaiSanPhams.OrderBy(n => n.MaLoaiSp), "MaLoaiSP", "TenLoaiSP");
@@ -180,7 +180,7 @@ namespace MarkShop.Controllers
             return View();
         }
 
-        public ActionResult thongBaoRong()
+        public IActionResult thongBaoRong()
         {
             if (HttpContext.Session.GetString("SessionAdmin") == null)
             {
@@ -206,7 +206,7 @@ namespace MarkShop.Controllers
             return TongDoanhThu;
         }
 
-        public ActionResult QuanLiDonHang()
+        public IActionResult QuanLiDonHang()
         {
             if (HttpContext.Session.GetString("SessionAdmin") == null)
             {
@@ -217,17 +217,14 @@ namespace MarkShop.Controllers
             ViewBag.TongDoanhThu = TongDoanhThu();
             return View(loadData);
         }
-        [HttpPost]
-        public ActionResult DuyetDonHang(int maHD)
+        public IActionResult DuyetDonHang(int maHD)
         {
             HoaDon hd = db.HoaDons.SingleOrDefault(n => n.MaHd.Equals(maHD));
             hd.TinhTrang = true;
             db.SaveChanges();
             return RedirectToAction("QuanLiDonHang", "ThemXoaSua");
         }
-
-        [HttpPost]
-        public ActionResult HuyDH(int maHD)
+        public IActionResult HuyDH(int maHD)
         {
             HoaDon hd = db.HoaDons.SingleOrDefault(n => n.MaHd.Equals(maHD));
             db.HoaDons.Remove(hd);
@@ -235,7 +232,7 @@ namespace MarkShop.Controllers
             return RedirectToAction("QuanLiDonHang", "ThemXoaSua");
         }
 
-        public ActionResult QuanLiKhachHang()
+        public IActionResult QuanLiKhachHang()
         {
             ViewBag.GetList = from a in db.HoaDons
                               join b in db.KhachHangs
@@ -253,10 +250,11 @@ namespace MarkShop.Controllers
             return View(ViewBag.GetList);
         }
         [HttpPost]
-        public ActionResult XoaTaiKhoan(int maKH)
+        public IActionResult XoaTaiKhoan(int maKH)
         {
             KhachHang kh = db.KhachHangs.SingleOrDefault(n => n.MaKh.Equals(maKH));
-            db.KhachHangs.Add(kh);
+            db.KhachHangs.Remove(kh);
+            //db.Entry(kh).State = EntityState.Deleted;
             db.SaveChanges();
             return RedirectToAction("QuanLiKhachHang", "ThemXoaSua");
         }

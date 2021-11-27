@@ -23,8 +23,8 @@ namespace MarkShop.Models
         public int? MaNcc { get; set; }
         public int? SoLuongTon { get; set; }
 
-        public virtual LoaiSanPham MaLoaiSpNavigation { get; set; }
-        public virtual NhaCungCap MaNccNavigation { get; set; }
+        public virtual LoaiSanPham? MaLoaiSpNavigation { get; set; }
+        public virtual NhaCungCap? MaNccNavigation { get; set; }
         public virtual ICollection<ChiTietHoaDon> ChiTietHoaDons { get; set; }
     }
 }

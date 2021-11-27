@@ -11,7 +11,6 @@ namespace MarkShop.Models
     public class GioHang
     {
         
-        //readonly QLSHOPTHOITRANGContext db = new QLSHOPTHOITRANGContext();
         private readonly QLSHOPTHOITRANGContext db;
         public GioHang(QLSHOPTHOITRANGContext Database)
         {
@@ -22,18 +21,17 @@ namespace MarkShop.Models
         public string hinhAnh { get; set; }
         public double donGia { get; set; }
         public int soLuong { get; set; }
-        //public HasNoKey()
         public double thanhTien
         {
             get { return soLuong * donGia; }
         }
 
         // Khởi tạo giỏ hàng
-        public GioHang(int maSanPham)
+        public GioHang(int maSanPham, QLSHOPTHOITRANGContext db)
         {
             maSP = maSanPham;
             //SanPham sanPham = db.SanPhams.Single(sp => sp.MaSp == maSP);
-            SanPham sanPham = this.db.SanPhams.Single(sp => sp.MaSp == maSP);
+            SanPham sanPham = db.SanPhams.Single(sp => sp.MaSp == maSP);
             tenSP = sanPham.TenSp;
             hinhAnh = sanPham.Anh;
             donGia = double.Parse(sanPham.GiaBan.ToString());

@@ -7,29 +7,29 @@ namespace MarkShop.Models
 {
     public partial class QLSHOPTHOITRANGContext : DbContext
     {
-        public QLSHOPTHOITRANGContext()
+        /*public QLSHOPTHOITRANGContext()
         {
-        }
+        }*/
 
         public QLSHOPTHOITRANGContext(DbContextOptions<QLSHOPTHOITRANGContext> options)
             : base(options)
         {
         }
 
-        public  DbSet<ChiTietHoaDon> ChiTietHoaDons { get; set; }
-        public  DbSet<HoaDon> HoaDons { get; set; }
-        public  DbSet<KhachHang> KhachHangs { get; set; }
-        public  DbSet<LoaiSanPham> LoaiSanPhams { get; set; }
-        public  DbSet<NhaCungCap> NhaCungCaps { get; set; }
-        //public  DbSet<SanPham> SanPhams { get; set; }
-        public DbSet<SanPham> SanPhams => Set<SanPham>();
-
-        //public virtual DbSet<GioHang> GioHangs { get; set; }
+        public virtual DbSet<ChiTietHoaDon> ChiTietHoaDons { get; set; }
+        public virtual DbSet<HoaDon> HoaDons { get; set; }
+        public virtual DbSet<KhachHang> KhachHangs { get; set; }
+        public virtual DbSet<LoaiSanPham> LoaiSanPhams { get; set; }
+        public virtual DbSet<NhaCungCap> NhaCungCaps { get; set; }
+        public virtual DbSet<SanPham> SanPhams { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-            {             
+            {
+                optionsBuilder
+                    .UseLazyLoadingProxies()
+                    .UseSqlServer("Default");
             }
         }
 

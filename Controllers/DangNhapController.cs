@@ -10,7 +10,6 @@ namespace MarkShop.Controllers
     //public string SessionName = "_Name";
     public class DangNhapController : Controller
     {
-        //string? SessionAdmin = default;
         public IActionResult DangNhap()
         {
             return View();

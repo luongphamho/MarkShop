@@ -28,13 +28,13 @@ namespace MarkShop
         {
             services.AddControllersWithViews();
             services.AddDbContext<QLSHOPTHOITRANGContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("Default")));
+            options.UseLazyLoadingProxies()
+            .UseSqlServer(Configuration.GetConnectionString("Default")));
             services.AddDistributedMemoryCache();
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(1);//You can set Time "one" minute as the Session Time
             });
             services.AddMvc();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

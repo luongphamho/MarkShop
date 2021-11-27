@@ -32,16 +32,11 @@ namespace MarkShop.Controllers
         {
             if (!String.IsNullOrEmpty(user.UserName) && !String.IsNullOrEmpty(user.Password))
             {
-                //string? SessionUser = default;
-                //string? SessionTaiKhoan = default;
                 KhachHang kh = db.KhachHangs.SingleOrDefault(khachHang => khachHang.TaiKhoan == user.UserName && khachHang.MatKhau == user.Password);
                 if (kh != null)
                 {
-                    //HttpContext.Session.SetString(SessionTaiKhoan, kh.TaiKhoan);
-                    //Session["taikhoan"] = kh;
                     SessionHelper.SetObjectAsJson(HttpContext.Session, "taikhoan", kh);
                     HttpContext.Session.SetString("SessionUser", kh.TaiKhoan);
-                    //Session.Add("User", kh.TaiKhoan);
                     return RedirectToAction("SanPhamPartial", "SanPham");
                 }
                 else
@@ -87,10 +82,11 @@ namespace MarkShop.Controllers
         public ActionResult DangXuat()
         {
             //ISession sessionAdmin;
-            
-            //Session["taikhoan"] = null;
-            //Session["GioHang"] = null;
-            return RedirectToAction("Home", "Home");
+
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "taikhoan", null);
+            //HttpContext.Session.SetString("SessionUser", null);
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", null);
+            return RedirectToAction("Index", "Home");
         }
         public ActionResult LichSu()
         {
@@ -127,6 +123,7 @@ namespace MarkShop.Controllers
         public ActionResult HuyDonHang(int maSP, int maHD)
         {
             ChiTietHoaDon cthd = db.ChiTietHoaDons.Single(n => n.MaSp.Equals(maSP) && n.MaHd.Equals(maHD));
+            //db.ChiTietHoaDons.Attach(cthd);
             db.ChiTietHoaDons.Remove(cthd);
             db.SaveChanges();
             HoaDon hd = db.HoaDons.SingleOrDefault(n => n.MaHd.Equals(maHD));
