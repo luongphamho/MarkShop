@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @using MarkShop.Controllers;
 @using MarkShop.Models;
+@inject IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -114,14 +116,15 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ml-auto d-flex justify-content-center align-items-center">
                     <li class="nav-item">
-                        <a asp-controller="Home" asp-action="Index">TRANG CHU</a>
+                        <a asp-controller="Home" asp-action="Index">TRANG CHỦ</a>
                     </li>
                     <li class="nav-item">
-                        <a asp-controller="Home" asp-action="GioiThieu">GIOI THIEU</a>
+                        <a asp-controller="Home" asp-action="GioiThieu">GIỚI THIỆU</a>
                     </li>
                     <li class="nav-item">
-                        <a asp-controller="SanPham" asp-action="SanPhamPartial">SAN PHAM</a>
+                        <a asp-controller="SanPham" asp-action="SanPhamPartial">SẢN PHẨM</a>
                     </li>
+                    @if (Context.Session.GetString("user") != null && Context.Session.GetString("user") != "loggout")
                     {
                         <li class="nav-item">
                             <a asp-controller="User" asp-action="LichSu">LỊCH SỬ MUA HÀNG</a>

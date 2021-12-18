@@ -9,9 +9,13 @@ namespace MarkShop.Helpers
 {
     public static class SessionHelper
     {
+        
         public static void SetObjectAsJson(this ISession session, string key, object value)
         {
-            session.SetString(key, JsonConvert.SerializeObject(value));
+            session.SetString(key, JsonConvert.SerializeObject(value, Formatting.Indented, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            }));
         }
 
         public static T GetObjectFromJson<T>(this ISession session, string key)

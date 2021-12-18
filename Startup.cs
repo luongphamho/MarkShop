@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MarkShop.Models;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace MarkShop
 {
@@ -31,10 +32,11 @@ namespace MarkShop
             options.UseLazyLoadingProxies()
             .UseSqlServer(Configuration.GetConnectionString("Default")));
             services.AddDistributedMemoryCache();
+            services.AddHttpContextAccessor();
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(1);//You can set Time "one" minute as the Session Time
             });
-            services.AddMvc();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

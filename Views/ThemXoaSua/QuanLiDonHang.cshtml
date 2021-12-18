@@ -42,8 +42,10 @@
                         @if (item.MaHdNavigation.TinhTrang == false)
                         {
                             <td style="width:155px">Chưa thanh toán</td>
-                            <td style="width:70px"><button class="btn btn-info btnDuyetDH" data-mahd="@item.MaHd">Duyệt</button></td>
-                            <td style="width:70px"><button class="btn btn-danger btnHuyDH" data-mahd="@item.MaHd">Huỷ</button></td>
+                            @*<td style="width:70px"><button class="btn btn-info btnDuyetDH" data-mahd="@item.MaHd">Duyệt</button></td>*@
+                            <td style="width:70px"><a href="@Url.Action("DuyetDonHang", "ThemXoaSua", new { @MaHd = @item.MaHd })" class="btn btn-info btnDuyetDH">Duyệt</a></td>
+                            @*<td style="width:70px"><button class="btn btn-danger btnHuyDH" data-mahd="@item.MaHd">Huỷ</button></td>*@
+                            <td style="width:70px"><a href="@Url.Action("HuyDH", "ThemXoaSua", new { @MaHd = @item.MaHd })" class="btn btn-info btnDuyetDH">Hủy</a></td>
                         }
                         else
                         {

@@ -36,7 +36,10 @@ namespace MarkShop.Controllers
                 if (kh != null)
                 {
                     SessionHelper.SetObjectAsJson(HttpContext.Session, "taikhoan", kh);
-                    HttpContext.Session.SetString("SessionUser", kh.TaiKhoan);
+                    SessionHelper.SetObjectAsJson(HttpContext.Session, "SessionUser", kh.TaiKhoan);
+                    HttpContext.Session.SetString("user", "logging");
+
+                    //HttpContext.Session.SetString("SessionUser", kh.TaiKhoan);
                     return RedirectToAction("SanPhamPartial", "SanPham");
                 }
                 else
@@ -81,11 +84,10 @@ namespace MarkShop.Controllers
         }
         public ActionResult DangXuat()
         {
-            //ISession sessionAdmin;
-
             SessionHelper.SetObjectAsJson(HttpContext.Session, "taikhoan", null);
-            //HttpContext.Session.SetString("SessionUser", null);
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "SessionUser", null);
             SessionHelper.SetObjectAsJson(HttpContext.Session, "GioHang", null);
+            HttpContext.Session.SetString("user", "loggout");
             return RedirectToAction("Index", "Home");
         }
         public ActionResult LichSu()
@@ -94,7 +96,7 @@ namespace MarkShop.Controllers
 
             // Nếu như chưa đăng nhập thì quay về trang đăng nhập trong trường hợp user tự động get URL đến trang lịch sử giao dịch
             //if (Session["taikhoan"] == null)
-            if (SessionHelper.GetObjectFromJson<KhachHang>(HttpContext.Session, "taikhoan") == null)
+            if (HttpContext.Session.GetString("user") != "logging")
             {
                 return RedirectToAction("DangNhap", "User");
             }
@@ -123,7 +125,6 @@ namespace MarkShop.Controllers
         public ActionResult HuyDonHang(int maSP, int maHD)
         {
             ChiTietHoaDon cthd = db.ChiTietHoaDons.Single(n => n.MaSp.Equals(maSP) && n.MaHd.Equals(maHD));
-            //db.ChiTietHoaDons.Attach(cthd);
             db.ChiTietHoaDons.Remove(cthd);
             db.SaveChanges();
             HoaDon hd = db.HoaDons.SingleOrDefault(n => n.MaHd.Equals(maHD));

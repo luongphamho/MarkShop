@@ -34,28 +34,28 @@ namespace MarkShop.Controllers
         }
         public ActionResult TrangPhucNu(int page = 1, int pageSize = 12)
         {
-            /*if (Session["Admin"] == null)
+            if (HttpContext.Session.GetString("SessionAdmin") == null)
             {
                 return RedirectToAction("DangNhap", "DangNhap");
-            }*/
+            }
             var trangPhucNu = new Product();
             var model = trangPhucNu.ListAll(page, pageSize, db);
             return View(model);
         }
         public ActionResult DanhMucCacSanPham(int page = 1, int pageSize = 12)
         {
-            /*if (Session["Admin"] == null)
+            if (HttpContext.Session.GetString("SessionAdmin") == null)
             {
                 return RedirectToAction("DangNhap", "DangNhap");
-            }*/
+            }
             var sanPham = new Product();
             var model = sanPham.ListAll(page, pageSize, db);
             return View(model);
         }
         public ActionResult DangXuat()
         {
-            //Session["Admin"] = null;
-            return RedirectToAction("Home", "Home");
+            HttpContext.Session.SetString("SessionAdmin", "");
+            return RedirectToAction("GioiThieu", "Home");
         }
     }
 

@@ -7,9 +7,9 @@ namespace MarkShop.Models
 {
     public partial class QLSHOPTHOITRANGContext : DbContext
     {
-        /*public QLSHOPTHOITRANGContext()
+        public QLSHOPTHOITRANGContext()
         {
-        }*/
+        }
 
         public QLSHOPTHOITRANGContext(DbContextOptions<QLSHOPTHOITRANGContext> options)
             : base(options)
